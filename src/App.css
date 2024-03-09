@@ -1,0 +1,16 @@
+
+
+
+@font-face {
+  font-family: 'fontss';
+  src: url('./fonts/hello.woff2') format('.woff2'),
+       url('fonts/your-font-file.ttf') format('truetype');
+  /* Add more file formats if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Apply the font-family to specific elements or globally */
+body {
+  font-family: 'fontss', sans-serif;
+}
