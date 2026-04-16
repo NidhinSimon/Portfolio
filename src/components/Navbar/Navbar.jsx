@@ -1,69 +1,98 @@
-import { easeIn, motion } from 'framer-motion';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const menuItems = ["Works", { label: "Resume", link: "https://drive.google.com/file/d/1GFZSukKttqWZb08UTnegw4V8__omzfLm/view?usp=sharing" }, "Skills", "Contact"];
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Works', href: '#Works' },
+    { name: 'Skills', href: '#Skills' },
+    { name: 'Contact', href: '#Contact' },
+  ];
 
   return (
-    <div className='bg-zinc-900 fixed z-[999] text-white w-full py-5 flex justify-between'>
-      {open && (
-        <motion.div initial={{opacity:0}} animate={{opacity:1,transition:easeIn}} className='h-screen w-60 bg-blue-100 fixed top-0 left-0 z-50'>
-          
-         
-          <div className='p-4'>
-          <button onClick={() => setOpen(false)}>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-6 w-6 text-black cursor-pointer'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M6 18L18 6M6 6l12 12' />
-              </svg>
-             
-            </button>
-           
-          
-          </div>
-        
-          <div className=''>
-          {menuItems.map((item, index) => (
-              <a className='uppercase text-black flex gap-10 ml-2 p-2' key={index} href={typeof item === 'string' ? `#${item}` : item.link}>
-                {typeof item === 'string' ? item : item.label}
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      )}
-      <div>
-        <h1 className='text-2xl px-4 sm:px-20 font-bold'>Nidhin Simon</h1>
-      </div>
-      <div className='flex gap-4 mx-4 sm:mx-10'>
-       
-        <div  className='hidden sm:flex'>
-          {["Works", "Resume","Skills", "Contact"].map((item, index) => (
-            <a className='uppercase flex gap-10 ml-2 ' key={index} href={`#${item}`}>
-              {item}
+    <nav 
+      className={`fixed top-0 left-0 w-full z-[1000] px-10 md:px-20 py-6 transition-all duration-500 ${
+        scrolled ? 'bg-[#080808]/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent'
+      }`}
+    >
+      <div className='max-w-7xl mx-auto flex justify-between items-center'>
+        <a href="#landing" className='group'>
+          <h1 className='text-xl md:text-2xl font-bold text-[#F0EDE6] tracking-tighter uppercase'>
+            Nidhin <span className='text-[#C9F31D] group-hover:text-white transition-colors'>Simon</span>
+          </h1>
+        </a>
+
+        {/* Desktop Links */}
+        <div className='hidden md:flex items-center gap-12'>
+          {navLinks.map((link) => (
+            <a 
+              key={link.name} 
+              href={link.href} 
+              className='text-[10px] uppercase tracking-[0.2em] font-bold text-[#888] hover:text-[#C9F31D] transition-colors'
+            >
+              {link.name}
             </a>
           ))}
-        </div>
-    
-        <div onClick={() => setOpen(!open)} className='flex sm:hidden cursor-pointer'>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            className='h-6 w-6 text-white'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
+          <a 
+            href="https://drive.google.com/file/d/1GFZSukKttqWZb08UTnegw4V8__omzfLm/view?usp=sharing" 
+            target="_blank" 
+            className='px-6 py-2.5 bg-[#F0EDE6] text-[#080808] text-[10px] font-bold uppercase tracking-widest rounded-full hover:bg-[#C9F31D] transition-all active:scale-95'
           >
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h16m-7 6h7' />
-          </svg>
+            Resume
+          </a>
         </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className='md:hidden flex flex-col gap-1.5'
+        >
+          <div className={`w-6 h-0.5 bg-white transition-all ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <div className={`w-6 h-0.5 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`} />
+          <div className={`w-6 h-0.5 bg-white transition-all ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+        </button>
       </div>
-    </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className='fixed top-0 left-0 w-full h-screen bg-[#080808] flex flex-col justify-center items-center gap-10 z-[-1]'
+          >
+            {navLinks.map((link) => (
+              <a 
+                key={link.name} 
+                href={link.href} 
+                onClick={() => setIsOpen(false)}
+                className='text-4xl font-bold text-[#F0EDE6] tracking-tighter uppercase hover:text-[#C9F31D]'
+              >
+                {link.name}
+              </a>
+            ))}
+            <a 
+              href="https://drive.google.com/file/d/1GFZSukKttqWZb08UTnegw4V8__omzfLm/view?usp=sharing" 
+              target="_blank"
+              className='text-2xl font-bold text-[#C9F31D] border-b-2 border-[#C9F31D]'
+            >
+              Resume ↗
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
   );
 };
 
